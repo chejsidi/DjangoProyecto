@@ -16,8 +16,8 @@ https://github.com/chejsidi/DjangoProyecto
 
 ```bash
 # Clonar el repositorio
-git clone <url-del-repositorio>
-cd egibide_access
+git clone https://github.com/chejsidi/DjangoProyecto.git
+cd DjangoProyecto
 
 # Instalar dependencias
 uv sync
