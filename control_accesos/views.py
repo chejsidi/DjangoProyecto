@@ -2,7 +2,8 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
 from .models import Usuario
 from .forms import UsuarioForm
-
+from .models import Zona
+from .forms  import ZonaForm
 
 def panel(request):
     return render(request, "control_accesos/panel.html")
@@ -63,3 +64,44 @@ def usuario_eliminar(request, pk):
     return render(
         request, "control_accesos/usuario_confirmar_eliminar.html", {"usuario": usuario}
     )
+
+# --- Zonas ---
+
+def zona_lista(request):
+    zonas = Zona.objects.all()
+    return render(request, 'control_accesos/zona_lista.html', {'zonas': zonas})
+
+def zona_detalle(request, pk):
+    zona = get_object_or_404(Zona, pk=pk)
+    return render(request, 'control_accesos/zona_detalle.html', {'zona': zona})
+
+def zona_crear(request):
+    if request.method == 'POST':
+        form = ZonaForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Zona creada correctamente.')
+            return redirect('control_accesos:zona_lista')
+    else:
+        form = ZonaForm()
+    return render(request, 'control_accesos/zona_form.html', {'form': form, 'titulo': 'Nueva zona'})
+
+def zona_editar(request, pk):
+    zona = get_object_or_404(Zona, pk=pk)
+    if request.method == 'POST':
+        form = ZonaForm(request.POST, instance=zona)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Zona actualizada correctamente.')
+            return redirect('control_accesos:zona_lista')
+    else:
+        form = ZonaForm(instance=zona)
+    return render(request, 'control_accesos/zona_form.html', {'form': form, 'titulo': 'Editar zona'})
+
+def zona_eliminar(request, pk):
+    zona = get_object_or_404(Zona, pk=pk)
+    if request.method == 'POST':
+        zona.delete()
+        messages.success(request, 'Zona eliminada.')
+        return redirect('control_accesos:zona_lista')
+    return render(request, 'control_accesos/zona_confirmar_eliminar.html', {'zona': zona})

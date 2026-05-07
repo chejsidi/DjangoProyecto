@@ -1,0 +1,60 @@
+{% extends 'control_accesos/base.html' %}
+{% block title %}Zona: {{ zona }}{% endblock %}
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="bi bi-building me-2"></i>{{ zona.nombre }}</h2>
+    <div>
+        <a href="{% url 'control_accesos:zona_editar' zona.pk %}" class="btn btn-warning"><i class="bi bi-pencil me-1"></i>Editar</a>
+        <a href="{% url 'control_accesos:zona_lista' %}" class="btn btn-outline-secondary"><i class="bi bi-arrow-left me-1"></i>Volver</a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-5">
+        <div class="card shadow-sm mb-4">
+            <div class="card-header"><strong>Datos de la zona</strong></div>
+            <div class="card-body">
+                <dl class="row mb-0">
+                    <dt class="col-sm-5">Código</dt>
+                    <dd class="col-sm-7"><span class="badge bg-secondary">{{ zona.codigo }}</span></dd>
+                    <dt class="col-sm-5">Nombre</dt>
+                    <dd class="col-sm-7">{{ zona.nombre }}</dd>
+                    <dt class="col-sm-5">Nivel acceso</dt>
+                    <dd class="col-sm-7">{{ zona.get_nivel_acceso_display }}</dd>
+                    <dt class="col-sm-5">Ubicación</dt>
+                    <dd class="col-sm-7">{{ zona.ubicacion|default:"—" }}</dd>
+                    <dt class="col-sm-5">Descripción</dt>
+                    <dd class="col-sm-7">{{ zona.descripcion|default:"—" }}</dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-7">
+        <div class="card shadow-sm">
+            <div class="card-header"><strong>Usuarios con permiso en esta zona</strong></div>
+            <div class="card-body p-0">
+                <table class="table mb-0">
+                    <thead><tr><th>Usuario</th><th>Estado</th><th>Fecha fin</th></tr></thead>
+                    <tbody>
+                        {% for p in zona.permisos.all %}
+                        <tr>
+                            <td>{{ p.usuario }}</td>
+                            <td>
+                                {% if p.estado == 'activo' %}<span class="badge bg-success">Activo</span>
+                                {% elif p.estado == 'caducado' %}<span class="badge bg-warning text-dark">Caducado</span>
+                                {% else %}<span class="badge bg-secondary">Revocado</span>{% endif %}
+                            </td>
+                            <td>{{ p.fecha_fin|default:"Sin límite" }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="3" class="text-muted text-center py-2">Sin permisos asignados.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

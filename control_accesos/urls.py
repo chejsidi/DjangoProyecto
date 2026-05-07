@@ -13,4 +13,9 @@ urlpatterns = [
     path(
         "usuarios/<int:pk>/eliminar/", views.usuario_eliminar, name="usuario_eliminar"
     ),
+    path('zonas/',                   views.zona_lista,    name='zona_lista'),
+    path('zonas/nueva/',             views.zona_crear,    name='zona_crear'),
+    path('zonas/<int:pk>/',          views.zona_detalle,  name='zona_detalle'),
+    path('zonas/<int:pk>/editar/',   views.zona_editar,   name='zona_editar'),
+    path('zonas/<int:pk>/eliminar/', views.zona_eliminar, name='zona_eliminar'),
 ]
