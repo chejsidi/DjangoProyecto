@@ -8,9 +8,28 @@ from .models import Permiso
 from .forms  import PermisoForm
 from .models import RegistroAcceso
 from .forms  import RegistroAccesoForm
+from django.utils import timezone
 
 def panel(request):
-    return render(request, "control_accesos/panel.html")
+    hoy = timezone.now().date()
+
+    total_usuarios    = Usuario.objects.count()
+    total_zonas       = Zona.objects.count()
+    accesos_hoy       = RegistroAcceso.objects.filter(fecha=hoy).count()
+    accesos_denegados = RegistroAcceso.objects.filter(fecha=hoy, resultado='denegado').count()
+    accesos_recientes = RegistroAcceso.objects.select_related('usuario', 'zona')[:10]
+    permisos_caducados = Permiso.objects.filter(
+        fecha_fin__lt=hoy, estado='activo'
+    ).select_related('usuario', 'zona')
+
+    return render(request, 'control_accesos/panel.html', {
+        'total_usuarios':    total_usuarios,
+        'total_zonas':       total_zonas,
+        'accesos_hoy':       accesos_hoy,
+        'accesos_denegados': accesos_denegados,
+        'accesos_recientes': accesos_recientes,
+        'permisos_caducados': permisos_caducados,
+    })
 
 
 # --- Usuarios ---

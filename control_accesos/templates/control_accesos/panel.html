@@ -1,52 +1,113 @@
-{% extends 'control_accesos/base.html' %} {% block title %}Panel{% endblock %}
+{% extends 'control_accesos/base.html' %}
+{% block title %}Panel{% endblock %}
 {% block content %}
-<h2>Panel de Control</h2>
-<p class="text-muted">Bienvenido al sistema de gestión de accesos.</p>
 
-<div class="row mt-4">
-  <div class="col-md-3">
-    <div class="card text-center p-3">
-      <i class="bi bi-people fs-2 text-primary"></i>
-      <h5 class="mt-2">Usuarios</h5>
-      <a
-        href="{% url 'control_accesos:usuario_lista' %}"
-        class="btn btn-sm btn-outline-primary mt-2"
-        >Ver</a
-      >
+<h2 class="mb-4"><i class="bi bi-speedometer2 me-2"></i>Panel de Control</h2>
+
+<!-- Tarjetas de estadísticas -->
+<div class="row g-3 mb-4">
+    <div class="col-md-3">
+        <div class="card text-center border-0 shadow-sm">
+            <div class="card-body">
+                <i class="bi bi-people fs-2 text-primary"></i>
+                <h4 class="mt-2">{{ total_usuarios }}</h4>
+                <p class="text-muted mb-2">Usuarios</p>
+                <a href="{% url 'control_accesos:usuario_lista' %}" class="btn btn-sm btn-outline-primary">Ver</a>
+            </div>
+        </div>
     </div>
-  </div>
-  <div class="col-md-3">
-    <div class="card text-center p-3">
-      <i class="bi bi-building fs-2 text-primary"></i>
-      <h5 class="mt-2">Zonas</h5>
-      <a
-        href="{% url 'control_accesos:zona_lista' %}"
-        class="btn btn-sm btn-outline-primary mt-2"
-        >Ver</a
-      >
+    <div class="col-md-3">
+        <div class="card text-center border-0 shadow-sm">
+            <div class="card-body">
+                <i class="bi bi-building fs-2 text-info"></i>
+                <h4 class="mt-2">{{ total_zonas }}</h4>
+                <p class="text-muted mb-2">Zonas</p>
+                <a href="{% url 'control_accesos:zona_lista' %}" class="btn btn-sm btn-outline-info">Ver</a>
+            </div>
+        </div>
     </div>
-  </div>
-  <div class="col-md-3">
-    <div class="card text-center p-3">
-      <i class="bi bi-key fs-2 text-primary"></i>
-      <h5 class="mt-2">Permisos</h5>
-      <a
-        href="{% url 'control_accesos:permiso_lista' %}"
-        class="btn btn-sm btn-outline-primary mt-2"
-        >Ver</a
-      >
+    <div class="col-md-3">
+        <div class="card text-center border-0 shadow-sm">
+            <div class="card-body">
+                <i class="bi bi-door-open fs-2 text-success"></i>
+                <h4 class="mt-2">{{ accesos_hoy }}</h4>
+                <p class="text-muted mb-2">Accesos hoy</p>
+                <a href="{% url 'control_accesos:registro_lista' %}" class="btn btn-sm btn-outline-success">Ver</a>
+            </div>
+        </div>
     </div>
-  </div>
-  <div class="col-md-3">
-    <div class="card text-center p-3">
-      <i class="bi bi-clipboard-data fs-2 text-primary"></i>
-      <h5 class="mt-2">Registros</h5>
-      <a
-        href="{% url 'control_accesos:registro_lista' %}"
-        class="btn btn-sm btn-outline-primary mt-2"
-        >Ver</a
-      >
+    <div class="col-md-3">
+        <div class="card text-center border-0 shadow-sm">
+            <div class="card-body">
+                <i class="bi bi-x-circle fs-2 text-danger"></i>
+                <h4 class="mt-2">{{ accesos_denegados }}</h4>
+                <p class="text-muted mb-2">Denegados hoy</p>
+            </div>
+        </div>
     </div>
-  </div>
 </div>
+
+<!-- Accesos recientes -->
+<div class="card mb-4 shadow-sm">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <strong><i class="bi bi-clock-history me-2"></i>Accesos recientes</strong>
+        <a href="{% url 'control_accesos:registro_lista' %}" class="btn btn-sm btn-outline-secondary">Ver todos</a>
+    </div>
+    <div class="card-body p-0">
+        <table class="table table-hover mb-0">
+            <thead class="table-dark">
+                <tr><th>Fecha</th><th>Hora</th><th>Usuario</th><th>Zona</th><th>Resultado</th></tr>
+            </thead>
+            <tbody>
+                {% for r in accesos_recientes %}
+                <tr>
+                    <td>{{ r.fecha }}</td>
+                    <td>{{ r.hora }}</td>
+                    <td>{{ r.usuario }}</td>
+                    <td>{{ r.zona }}</td>
+                    <td>
+                        {% if r.resultado == 'permitido' %}
+                            <span class="badge bg-success"><i class="bi bi-check-circle me-1"></i>Permitido</span>
+                        {% else %}
+                            <span class="badge bg-danger"><i class="bi bi-x-circle me-1"></i>Denegado</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="5" class="text-center text-muted py-3">Sin accesos registrados.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Permisos caducados -->
+{% if permisos_caducados %}
+<div class="card border-warning shadow-sm">
+    <div class="card-header bg-warning text-dark">
+        <i class="bi bi-exclamation-triangle me-2"></i>Permisos con fecha caducada (pendientes de actualizar)
+    </div>
+    <div class="card-body p-0">
+        <table class="table mb-0">
+            <thead><tr><th>Código</th><th>Usuario</th><th>Zona</th><th>Fecha fin</th><th></th></tr></thead>
+            <tbody>
+                {% for p in permisos_caducados %}
+                <tr>
+                    <td>{{ p.codigo }}</td>
+                    <td>{{ p.usuario }}</td>
+                    <td>{{ p.zona }}</td>
+                    <td>{{ p.fecha_fin }}</td>
+                    <td>
+                        <a href="{% url 'control_accesos:permiso_editar' p.pk %}" class="btn btn-sm btn-warning">
+                            <i class="bi bi-pencil me-1"></i>Revisar
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endif %}
+
 {% endblock %}
