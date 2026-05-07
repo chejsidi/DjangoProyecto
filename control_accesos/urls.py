@@ -23,4 +23,7 @@ urlpatterns = [
     path('permisos/<int:pk>/',          views.permiso_detalle,  name='permiso_detalle'),
     path('permisos/<int:pk>/editar/',   views.permiso_editar,   name='permiso_editar'),
     path('permisos/<int:pk>/eliminar/', views.permiso_eliminar, name='permiso_eliminar'),
+    path('registros/',          views.registro_lista,   name='registro_lista'),
+    path('registros/nuevo/',    views.registro_crear,   name='registro_crear'),
+    path('registros/<int:pk>/', views.registro_detalle, name='registro_detalle'),
 ]

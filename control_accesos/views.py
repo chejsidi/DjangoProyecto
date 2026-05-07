@@ -6,6 +6,8 @@ from .models import Zona
 from .forms  import ZonaForm
 from .models import Permiso
 from .forms  import PermisoForm
+from .models import RegistroAcceso
+from .forms  import RegistroAccesoForm
 
 def panel(request):
     return render(request, "control_accesos/panel.html")
@@ -148,3 +150,57 @@ def permiso_eliminar(request, pk):
         messages.success(request, 'Permiso eliminado.')
         return redirect('control_accesos:permiso_lista')
     return render(request, 'control_accesos/permiso_confirmar_eliminar.html', {'permiso': permiso})
+
+
+# --- Registros de acceso ---
+
+def registro_lista(request):
+    registros = RegistroAcceso.objects.select_related('usuario', 'zona').all()
+
+    usuario_id = request.GET.get('usuario')
+    zona_id    = request.GET.get('zona')
+    fecha      = request.GET.get('fecha')
+
+    if usuario_id:
+        registros = registros.filter(usuario_id=usuario_id)
+    if zona_id:
+        registros = registros.filter(zona_id=zona_id)
+    if fecha:
+        registros = registros.filter(fecha=fecha)
+
+    return render(request, 'control_accesos/registro_lista.html', {
+        'registros':      registros,
+        'usuarios':       Usuario.objects.all(),
+        'zonas':          Zona.objects.all(),
+        'filtro_usuario': usuario_id,
+        'filtro_zona':    zona_id,
+        'filtro_fecha':   fecha,
+    })
+
+def registro_detalle(request, pk):
+    registro = get_object_or_404(RegistroAcceso, pk=pk)
+    return render(request, 'control_accesos/registro_detalle.html', {'registro': registro})
+
+def registro_crear(request):
+    if request.method == 'POST':
+        form = RegistroAccesoForm(request.POST)
+        if form.is_valid():
+            registro = form.save(commit=False)
+
+            # ── Validación automática 
+            permiso = Permiso.objects.filter(
+                usuario=registro.usuario,
+                zona=registro.zona,
+            ).first()
+
+            if permiso and permiso.esta_vigente():
+                registro.resultado = 'permitido'
+            else:
+                registro.resultado = 'denegado'
+
+            registro.save()
+            messages.success(request, f'Acceso registrado: {registro.get_resultado_display()}.')
+            return redirect('control_accesos:registro_lista')
+    else:
+        form = RegistroAccesoForm()
+    return render(request, 'control_accesos/registro_form.html', {'form': form, 'titulo': 'Registrar acceso'})

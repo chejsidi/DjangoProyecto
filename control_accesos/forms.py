@@ -2,6 +2,7 @@ from django import forms
 from .models import Usuario
 from .models import Zona
 from .models import Permiso
+from .models import RegistroAcceso
 
 class UsuarioForm(forms.ModelForm):
     class Meta:
@@ -40,4 +41,16 @@ class PermisoForm(forms.ModelForm):
             'fecha_inicio': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
             'fecha_fin':    forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
             'estado':       forms.Select(attrs={'class': 'form-select'}),
+        }
+
+
+class RegistroAccesoForm(forms.ModelForm):
+    class Meta:
+        model  = RegistroAcceso
+        fields = ['codigo', 'usuario', 'zona', 'observaciones']
+        widgets = {
+            'codigo':        forms.TextInput(attrs={'class': 'form-control'}),
+            'usuario':       forms.Select(attrs={'class': 'form-select'}),
+            'zona':          forms.Select(attrs={'class': 'form-select'}),
+            'observaciones': forms.Textarea(attrs={'class': 'form-control', 'rows': 2}),
         }
