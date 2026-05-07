@@ -1,0 +1,18 @@
+{% extends 'control_accesos/base.html' %}
+
+{% block title %}Panel{% endblock %}
+
+{% block content %}
+<h2>Panel de Control</h2>
+<p class="text-muted">Bienvenido al sistema de gestión de accesos.</p>
+
+<div class="row mt-4">
+    <div class="col-md-3">
+        <div class="card text-center p-3">
+            <i class="bi bi-people fs-2 text-primary"></i>
+            <h5 class="mt-2">Usuarios</h5>
+            <a href="{% url 'control_accesos:usuario_lista' %}" class="btn btn-sm btn-outline-primary mt-2">Ver</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

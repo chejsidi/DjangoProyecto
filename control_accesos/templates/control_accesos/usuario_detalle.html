@@ -1,0 +1,31 @@
+{% extends 'control_accesos/base.html' %}
+
+{% block title %}{{ usuario }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>{{ usuario.nombre }} {{ usuario.apellidos }}</h2>
+    <div>
+        <a href="{% url 'control_accesos:usuario_editar' usuario.pk %}" class="btn btn-primary">Editar</a>
+        <a href="{% url 'control_accesos:usuario_lista' %}" class="btn btn-outline-secondary">Volver</a>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <dl class="row">
+            <dt class="col-sm-3">DNI</dt>
+            <dd class="col-sm-9">{{ usuario.dni }}</dd>
+
+            <dt class="col-sm-3">Email</dt>
+            <dd class="col-sm-9">{{ usuario.email }}</dd>
+
+            <dt class="col-sm-3">Teléfono</dt>
+            <dd class="col-sm-9">{{ usuario.telefono|default:"—" }}</dd>
+
+            <dt class="col-sm-3">Tipo</dt>
+            <dd class="col-sm-9">{{ usuario.get_tipo_display }}</dd>
+        </dl>
+    </div>
+</div>
+{% endblock %}
