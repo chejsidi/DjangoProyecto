@@ -1,0 +1,54 @@
+{% extends 'control_accesos/base.html' %}
+{% block title %}Permisos{% endblock %}
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="bi bi-key me-2"></i>Permisos</h2>
+    <a href="{% url 'control_accesos:permiso_crear' %}" class="btn btn-primary">
+        <i class="bi bi-plus-circle me-1"></i>Nuevo permiso
+    </a>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body p-0">
+        <table class="table table-hover mb-0">
+            <thead class="table-dark">
+                <tr>
+                    <th>Código</th><th>Usuario</th><th>Zona</th>
+                    <th>Inicio</th><th>Fin</th><th>Estado</th><th>Vigente</th><th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for p in permisos %}
+                <tr>
+                    <td>{{ p.codigo }}</td>
+                    <td>{{ p.usuario }}</td>
+                    <td>{{ p.zona }}</td>
+                    <td>{{ p.fecha_inicio }}</td>
+                    <td>{{ p.fecha_fin|default:"Sin límite" }}</td>
+                    <td>
+                        {% if p.estado == 'activo' %}<span class="badge bg-success">Activo</span>
+                        {% elif p.estado == 'caducado' %}<span class="badge bg-warning text-dark">Caducado</span>
+                        {% else %}<span class="badge bg-secondary">Revocado</span>{% endif %}
+                    </td>
+                    <td>
+                        {% if p.esta_vigente %}
+                            <span class="badge bg-success"><i class="bi bi-check-circle"></i></span>
+                        {% else %}
+                            <span class="badge bg-danger"><i class="bi bi-x-circle"></i></span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a href="{% url 'control_accesos:permiso_editar' p.pk %}" class="btn btn-sm btn-outline-warning"><i class="bi bi-pencil"></i></a>
+                        <a href="{% url 'control_accesos:permiso_eliminar' p.pk %}" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="8" class="text-center text-muted py-3">No hay permisos registrados.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% endblock %}

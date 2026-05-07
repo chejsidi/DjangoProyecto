@@ -18,4 +18,9 @@ urlpatterns = [
     path('zonas/<int:pk>/',          views.zona_detalle,  name='zona_detalle'),
     path('zonas/<int:pk>/editar/',   views.zona_editar,   name='zona_editar'),
     path('zonas/<int:pk>/eliminar/', views.zona_eliminar, name='zona_eliminar'),
+    path('permisos/',                   views.permiso_lista,    name='permiso_lista'),
+    path('permisos/nuevo/',             views.permiso_crear,    name='permiso_crear'),
+    path('permisos/<int:pk>/',          views.permiso_detalle,  name='permiso_detalle'),
+    path('permisos/<int:pk>/editar/',   views.permiso_editar,   name='permiso_editar'),
+    path('permisos/<int:pk>/eliminar/', views.permiso_eliminar, name='permiso_eliminar'),
 ]
